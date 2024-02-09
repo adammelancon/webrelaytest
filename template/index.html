@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Relay Control</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <style>
+        .button-container button.green {
+            background-color: #4CAF50; /* Green background */
+        }
+        .settings-container button.green {
+            background-color: red; /* Green background */
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+        }
+        .button-container button {
+            background-color: #f0f0f0;
+            border: none;
+            cursor: pointer;
+            padding: 70px;
+            margin: 5px;
+            font-size: 24px;
+            border-radius: 40px;
+        }
+        .settings-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+        }
+        .settings-container button {
+            background-color: #f0f0f0;
+            border: none;
+            cursor: pointer;
+            padding: 70px;
+            margin: 5px;
+            font-size: 24px;
+            border-radius: 40px;
+        }
+
+
+        .up, .down {
+            margin-left: 50px;
+            margin-right: 50px;
+        }
+    </style>
+    <script type="text/javascript">
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+        function sendRelayEvent(buttonId, action) {
+            socket.emit('relay_event', {button_id: buttonId, action: action});
+        }
+
+        function addEventListeners(buttonId) {
+            var button = document.getElementById(buttonId);
+
+            // Handle mouse events for desktop browsers
+            button.addEventListener('mousedown', function() {
+                sendRelayEvent(buttonId, 'on');
+                button.classList.add('green'); // Add green class on touchstart
+            });
+            button.addEventListener('mouseup', function() {
+                sendRelayEvent(buttonId, 'off');
+                button.classList.remove('green'); // Remove green class on touchend
+            });
+
+            // Handle touch events for mobile browsers
+            button.addEventListener('touchstart', function(e) {
+                e.preventDefault(); // Prevents additional mouse events being triggered
+                sendRelayEvent(buttonId, 'on');
+                button.classList.add('green'); // Add green class on touchstart
+
+            });
+            button.addEventListener('touchend', function(e) {
+                e.preventDefault(); // Prevents additional mouse events being triggered
+                sendRelayEvent(buttonId, 'off');
+                button.classList.remove('green'); // Remove green class on touchend
+
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add event listeners to each button after the DOM is fully loaded
+            addEventListeners('button1');
+            addEventListeners('button2');
+            addEventListeners('button3');
+            addEventListeners('button4');
+            addEventListeners('recenter');
+
+
+        });
+    </script>
+</head>
+<body>
+    <div class="button-container">
+        <button id="button1" class="left"><i class="fas fa-chevron-left"></i></button>
+        <button id="button2" class="up"><i class="fas fa-chevron-up"></i></button>
+        <button id="button3" class="down"><i class="fas fa-chevron-down"></i></button>
+        <button id="button4" class="right"><i class="fas fa-chevron-right"></i></button>
+    </div>
+    <div class="settings-container">
+        <button id="recenter" class="rcbutton"><i class="fas fa-sync"></i>
+</body>
+</html>
